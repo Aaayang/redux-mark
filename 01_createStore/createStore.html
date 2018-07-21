@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #root {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            border: 1px solid #333;
+            text-align: center;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script>
+        let oRoot = document.querySelector('#root');
+        let initState = {
+            bgColor: 'orange',
+            text: '士兵'
+        };
+        function render(state) {
+            oRoot.style.backgroundColor = state.bgColor;
+            oRoot.innerHTML = state.text;
+        }
+        // 可以通过 action 改变 state
+        function reducer(state = initState, action) {
+            switch (action.type) {
+                case 'MODIFYBGCOLOR':
+                    return {
+                        ...state,
+                        bgColor: 'pink'
+                    };
+                case 'MODIFYTEXT':
+                    return {
+                        ...state,
+                        text: '将军'
+                    };
+                default:
+                    return state;
+            }
+        }
+        // 返回两个方法：getState(拿到数据的方法)、dispatch(触发动作的方法)
+        function createStore(reducer) {
+            let state;
+            let listeners = [];
+            function getState() {
+                return JSON.parse(JSON.stringify(state));
+            }
+            function dispatch(action) {
+                state = reducer(state, action);
+
+                // 每次 dispatch 的时候执行订阅的函数
+                listeners.forEach(listener => listener());
+            }
+            function subscribe(listener) {
+                listeners.push(listener);
+                // 订阅之后返回一个函数，执行这个函数可以取消订阅
+                return function () {
+                    listeners = listeners.filter(itemListener => itemListener !== listener);
+                };
+            }
+            // 一上来就 dispatch 一下，目的是第一次 getState 时得到默认值
+            dispatch({
+                // 名字随便取，只要和 reducer 中的 action.type 匹配不上就会得到默认值
+                // 不要问为什么取这个名字，Redux 源码是类似的起法 ...
+                type: '@@INIT'
+            });
+            return {
+                // 通过 getState 得到当前数据
+                getState,
+                // 通过 dispatch 触发一个动作，其实其内部也是调用 reducer 改变的数据
+                dispatch,
+                // 通过提前订阅目的，以达到每次 dispatch 的时候自动触发目的
+                subscribe
+            };
+
+        }
+
+        let store = createStore(reducer);
+        console.log(store.getState()); // { bgColor: "orange", text: "士兵" }
+        // 得到数据后就可以渲染了
+        render(store.getState());
+
+        // 要先订阅一下我们的目的
+        let unSubscribe = store.subscribe(function () {
+            render(store.getState());
+        });
+
+        // 创建 action 的工具
+        let actionCreator = {
+            modifyBgColor() {
+                return {
+                    type: 'MODIFYBGCOLOR'
+                }
+            },
+            modifyText() {
+                return {
+                    type: 'MODIFYTEXT'
+                }
+            }
+        };
+
+        // 直接 dispatch 就可以渲染啦
+        store.dispatch(actionCreator.modifyBgColor());
+        store.dispatch(actionCreator.modifyText());
+    </script>
+</body>
+
+</html>
