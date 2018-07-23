@@ -1,4 +1,5 @@
 import { ADD1, MINUS1, ADD2, MINUS2 } from './action-types';
+import { resolve } from 'path';
 
 export function add1(e, num=1) {
     return {
@@ -50,11 +51,23 @@ export function addAsync1(e, num = 1) {
         setTimeout(() => {
             // 一秒钟之后不等返回值，自己 dispatch
             dispatch({
-                type: 'ADD1',
+                type: ADD1,
                 num
             });
         }, 1000);
     }
+}
+
+
+export function addPromise1(e, num = 1) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve({
+                type: ADD1,
+                num
+            });
+        }, 1000);
+    });
 }
 // 不能
 // export {

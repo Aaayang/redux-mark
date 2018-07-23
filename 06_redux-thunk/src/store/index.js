@@ -32,7 +32,25 @@ function thunk({dispatch, getState}) {
     }
 }
 
+// 只能处理成功，失败则处理不了
+function promise({dispatch, getState}) {
+    return function(next) {
+        return function(action) {
+            if(typeof action.then && typeof action.then === 'function') {
+                // 如果是 Promise
+                /* action.then((newAction) => {
+                    dispatch(newAction);
+                }); */
+                action.then(dispatch);
+            } else {
+                // 如果不是一个函数，那么直接传给老的 store.dispatch
+                next(action);
+            }
+        }
+    }
+}
+
 
 // 应用中间件，应用中间件的过程，其实就是改变 dispatch
-let store = applyMiddleware(thunk)(createStore)(reducers);
+let store = applyMiddleware(promise)(createStore)(reducers);
 export default store;

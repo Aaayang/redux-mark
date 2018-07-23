@@ -10,6 +10,7 @@ class Counter1 extends Component {
                 <button onClick={e => this.props.add1(e, 3)}>add</button>
                 <button onClick={e => this.props.minus1(e, 2)}>minus</button>
                 <button onClick={e => this.props.addAsync1(e, 1)}>addAsync</button>
+                <button onClick={e => this.props.addPromise1(e, 1)}>addPromise</button>
             </div>
         );
     }
