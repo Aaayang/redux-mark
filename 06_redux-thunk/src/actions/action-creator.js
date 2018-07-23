@@ -69,6 +69,22 @@ export function addPromise1(e, num = 1) {
         }, 1000);
     });
 }
+
+export function payloadPromise1(e, num = 1) {
+    return {
+        type: ADD1,
+        num: new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if(Math.random() > .5) {
+                    resolve(num);
+                } else {
+                    reject(-num);
+                }
+            }, 1000);
+        })
+    };
+}
+
 // 不能
 // export {
 //     add,

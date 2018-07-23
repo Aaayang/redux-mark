@@ -42,6 +42,18 @@ function promise({dispatch, getState}) {
                     dispatch(newAction);
                 }); */
                 action.then(dispatch);
+            } else if(action.num && action.num.then && typeof action.num.then === 'function') {
+                action.num.then(num => {
+                    dispatch({
+                        ...action,
+                        num
+                    });
+                }, num => {
+                    dispatch({
+                        ...action,
+                        num
+                    });
+                })
             } else {
                 // 如果不是一个函数，那么直接传给老的 store.dispatch
                 next(action);
