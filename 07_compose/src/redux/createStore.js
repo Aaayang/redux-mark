@@ -1,4 +1,7 @@
-export default function (reducer) {
+export default function createStore(reducer, initState, enchancer) {
+    if(enchancer) {
+        return enchancer(createStore)(reducer,initState);
+    }
     let state;
     let listeners = [];
 

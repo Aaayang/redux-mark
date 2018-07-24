@@ -64,5 +64,9 @@ function promise({dispatch, getState}) {
 
 
 // 应用中间件，应用中间件的过程，其实就是改变 dispatch
-let store = applyMiddleware(logger, thunk, promise)(createStore)(reducers);
+// let store = applyMiddleware(logger, thunk, promise)(createStore)(reducers);
+
+// 第二个参数是初始状态
+let store = createStore(reducers, {}, applyMiddleware(logger, thunk, promise));
+
 export default store;
